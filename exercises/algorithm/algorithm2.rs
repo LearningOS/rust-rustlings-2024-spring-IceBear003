@@ -7,6 +7,7 @@
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
 use std::vec::*;
+use std::ptr::swap;
 
 #[derive(Debug)]
 struct Node<T> {
@@ -67,13 +68,22 @@ impl<T> LinkedList<T> {
         match node {
             None => None,
             Some(next_ptr) => match index {
-                0 => Some(unsafe { &(*next_ptr.as_ptr()).val }),
+                0 => Some(unsafe { &(*next_ptr.as_ptr()).val }), 
                 _ => self.get_ith_node(unsafe { (*next_ptr.as_ptr()).next }, index - 1),
             },
         }
     }
-	pub fn reverse(&mut self){
-		// TODO
+	pub fn reverse(&mut self)
+        where T : Copy
+    {
+		for i in 0..(self.length/2) {
+            let node_a = self.get_ith_node(self.start, i as i32);
+            let node_b = self.get_ith_node(self.start, (self.length-i-1) as i32);
+            if let (Some(node_a), Some(node_b)) = (node_a, node_b) {
+                //TODO
+                //?
+            }
+        }
 	}
 }
 
