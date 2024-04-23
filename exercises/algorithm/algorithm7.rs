@@ -9,7 +9,9 @@ struct Stack<T> {
 	size: usize,
 	data: Vec<T>,
 }
-impl<T> Stack<T> {
+impl<T> Stack<T>
+	where T : Copy
+{
 	fn new() -> Self {
 		Self {
 			size: 0,
@@ -31,8 +33,12 @@ impl<T> Stack<T> {
 		self.size += 1;
 	}
 	fn pop(&mut self) -> Option<T> {
-		// TODO
-		None
+		if self.size > 0 {
+			self.size -= 1;
+			Some(self.data[self.size])
+		} else {
+			None
+		}
 	}
 	fn peek(&self) -> Option<&T> {
 		if 0 == self.size {
@@ -69,7 +75,7 @@ impl<T> Stack<T> {
 	}
 }
 struct IntoIter<T>(Stack<T>);
-impl<T: Clone> Iterator for IntoIter<T> {
+impl<T: Clone + Copy> Iterator for IntoIter<T> {
 	type Item = T;
 	fn next(&mut self) -> Option<Self::Item> {
 		if !self.0.is_empty() {
@@ -101,7 +107,37 @@ impl<'a, T> Iterator for IterMut<'a, T> {
 
 fn bracket_match(bracket: &str) -> bool
 {
-	//TODO
+	let mut stack_a : Stack<char> = Stack::new();
+	let mut stack_b : Stack<char> = Stack::new();
+	for i in bracket.chars() {
+		if i == '{' || i == '[' || i == '(' || i == '}' || i == ']' || i == ')' {
+			stack_a.push(i);
+		}
+	}
+	for i in 0..stack_a.len() {
+		let i = stack_a.peek();
+		if let Some(i) = i {
+			let i = *i;
+			if i == '{' || i == '[' || i == '(' {
+				stack_a.pop();
+				stack_b.push(i);
+			} else {
+				let a_top = stack_a.pop();
+				let b_top = stack_b.pop();
+				if let (Some(a),Some(b)) = (a_top,b_top) {
+					println!("{} and {}",a,b);
+					if !((a == '{' && b == '}') || 
+						(a == '[' && b == ']') || 
+						(a == '(' && b == ')')) {
+							println!("not match");
+							return false;
+					}
+				} else {
+					return false;
+				}
+			}
+		}
+	}
 	true
 }
 

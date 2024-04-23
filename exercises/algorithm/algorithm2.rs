@@ -80,8 +80,7 @@ impl<T> LinkedList<T> {
             let node_a = self.get_ith_node(self.start, i as i32);
             let node_b = self.get_ith_node(self.start, (self.length-i-1) as i32);
             if let (Some(node_a), Some(node_b)) = (node_a, node_b) {
-                //TODO
-                //?
+                let new_a = Box::new(Node::new(*node_a));
             }
         }
 	}
