@@ -2,8 +2,6 @@
 	stack
 	This question requires you to use a stack to achieve a bracket match
 */
-
-// I AM NOT DONE
 #[derive(Debug)]
 struct Stack<T> {
 	size: usize,
@@ -29,7 +27,11 @@ impl<T> Stack<T>
 		self.data.clear();
 	}
 	fn push(&mut self, val: T) {
-		self.data.push(val);
+		if self.size == self.data.len() {
+			self.data.push(val);
+		} else {
+			self.data[self.size] = val;
+		}
 		self.size += 1;
 	}
 	fn pop(&mut self) -> Option<T> {
@@ -107,38 +109,31 @@ impl<'a, T> Iterator for IterMut<'a, T> {
 
 fn bracket_match(bracket: &str) -> bool
 {
-	let mut stack_a : Stack<char> = Stack::new();
-	let mut stack_b : Stack<char> = Stack::new();
+	let mut stack : Stack<char> = Stack::new();
 	for i in bracket.chars() {
-		if i == '{' || i == '[' || i == '(' || i == '}' || i == ']' || i == ')' {
-			stack_a.push(i);
+		if i == '{' || i == '[' || i == '(' {
+			stack.push(i);
+			println!("add {} to stack",i);
 		}
-	}
-	for i in 0..stack_a.len() {
-		let i = stack_a.peek();
-		if let Some(i) = i {
-			let i = *i;
-			if i == '{' || i == '[' || i == '(' {
-				stack_a.pop();
-				stack_b.push(i);
-			} else {
-				let a_top = stack_a.pop();
-				let b_top = stack_b.pop();
-				if let (Some(a),Some(b)) = (a_top,b_top) {
-					println!("{} and {}",a,b);
-					if !((a == '{' && b == '}') || 
-						(a == '[' && b == ']') || 
-						(a == '(' && b == ')')) {
-							println!("not match");
-							return false;
-					}
-				} else {
+		if i == '}' || i == ']' || i == ')' {
+			if let Some(top) = stack.peek() {
+				println!("compare {} and {}",i,*top);
+				if !((*top == '{' && i == '}')||(*top == '[' && i == ']')||(*top == '(' && i == ')')) {
 					return false;
+				} else {
+					println!("pop out");
+					stack.pop();
 				}
+			} else {
+				return false;
 			}
-		}
+		} 
 	}
-	true
+	if stack.len() > 0 {
+		false
+	} else {
+		true
+	}
 }
 
 #[cfg(test)]
